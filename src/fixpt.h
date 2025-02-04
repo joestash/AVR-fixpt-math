@@ -126,13 +126,14 @@ FORCEINLINE uint16_t UMULHI(uint16_t a, uint16_t b) {
 #define UMULHI(a, b) (uint16_t)(((uint32_t)(uint16_t)(a) * (uint32_t)(uint16_t)(b)) >> 16)
 #endif
 
-FORCEINLINE uint8_t norm(uint16_t& a) {
-    uint8_t r = 0;
-    if (a < 0x0100) { r += 8; a <<= 8; }
-    if (a < 0x1000) { r += 4; a <<= 4; }
-    if (a < 0x4000) { r += 2; a <<= 2; }
-    if (a < 0x8000) { r += 1; a <<= 1; }
-    return r;
+// returns e = CLZ(x) and x <<= e
+FORCEINLINE uint8_t norm(uint16_t& x) {
+    uint8_t e = 0;
+    if (x < 0x0100) { e += 8; x <<= 8; }
+    if (x < 0x1000) { e += 4; x <<= 4; }
+    if (x < 0x4000) { e += 2; x <<= 2; }
+    if (x < 0x8000) { e += 1; x <<= 1; }
+    return e;
 }
 
 // for x!=0 returns 1/x in Q16
