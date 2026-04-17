@@ -293,6 +293,43 @@ FORCEINLINE void sincospi(int16_t x, int16_t& s, int16_t& c) {
     }
 }
 
+// Computes sin(pi*x) for signed x=[-1,1] in Q15
+//                   or unsigned x=[ 0,2] in Q15
+// |error| < 2.3 ULP
+FORCEINLINE int16_t sinpi(int16_t x) {
+
+    // reduce to quadrant, and x in [-0.25,0.25]
+    uint16_t q = (x + 0x2000) & 0xc000;     // quadrant [0,3] in 2 MSBs
+    x <<= 2;                                // normalize to Q15
+    if (x == -32768) x++;                   // saturate to avoid x*x overflow
+
+    int16_t xx = MULHI(x, x) << 1;  // Q15
+    int16_t y;
+
+    // reconstruct using quadrant
+    if (q & 0x4000) {
+        // cos approx, as even polynomial
+        y = 2039;                   // Q17
+        y = MULHI(y, xx) - 20209;   // Q16
+        y = MULHI(y, xx) + 32767;   // Q15
+    } else {
+        // sin approx, as odd polynomial
+        y = 322;                    // Q17
+        y = MULHI(y, xx) - 5291;    // Q16
+        y = MULHI(y, xx) + 25736;   // Q15
+        y = MULHI(y, x);            // Q14
+        y = (y << 1) + 1;           // Q15
+    }
+    return (q & 0x8000) ? -y : y;
+}
+
+// Computes cos(pi*x) for signed x=[-1,1] in Q15
+//                   or unsigned x=[ 0,2] in Q15
+// |error| < 2.3 ULP
+FORCEINLINE int16_t cospi(int16_t x) {
+    return sinpi(0x4000 - x);
+}
+
 // Computes atan2(y,x)/pi, with result in Q15
 // atan2pi(0,0) returns 0.25 (pi/4) in Q15
 //

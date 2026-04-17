@@ -153,6 +153,60 @@ void sincos_test() {
     arduboy.display();
 }
 
+void sinpi_test() {
+
+    float minerr = 0, maxerr = 0;
+    for (int32_t x = -32768; x <= 32767; x++) {
+
+        float ref = sinf(M_PI * x / 32768.0f) * 32768.0f;   // Q15
+
+        int16_t sn = sinpi(x);
+
+        float err = sn - ref;
+        if (err < minerr) minerr = err;
+        if (err > maxerr) maxerr = err;
+    }
+
+    uint32_t cycles = micros();
+    for (uint16_t i = 0; i < N_BENCH; ++i) {
+        yi = sinpi(xi);
+    }
+    cycles = 16 * (micros() - cycles) / N_BENCH;
+
+    arduboy.print("sinpi  ");
+    arduboy.print(minerr, 1); arduboy.print(", ");
+    arduboy.print(maxerr, 1); arduboy.print("  ");
+    arduboy.println(cycles - ARG1_OVERHEAD);
+    arduboy.display();
+}
+
+void cospi_test() {
+
+    float minerr = 0, maxerr = 0;
+    for (int32_t x = -32768; x <= 32767; x++) {
+
+        float ref = cosf(M_PI * x / 32768.0f) * 32768.0f;   // Q15
+
+        int16_t cn = cospi(x);
+
+        float err = cn - ref;
+        if (err < minerr) minerr = err;
+        if (err > maxerr) maxerr = err;
+    }
+
+    uint32_t cycles = micros();
+    for (uint16_t i = 0; i < N_BENCH; ++i) {
+        yi = cospi(xi);
+    }
+    cycles = 16 * (micros() - cycles) / N_BENCH;
+
+    arduboy.print("cospi  ");
+    arduboy.print(minerr, 1); arduboy.print(", ");
+    arduboy.print(maxerr, 1); arduboy.print("  ");
+    arduboy.println(cycles - ARG1_OVERHEAD);
+    arduboy.display();
+}
+
 void atan2_test() {
 
     float minerr = 0, maxerr = 0;
@@ -240,13 +294,15 @@ void setup() {
     arduboy.begin();
     arduboy.clear();
 
-    mulhi_test();
+    // mulhi_test();
     recip_test();
     udiv_test();
     rsqrt_test();
     log2_test();
     exp2_test();
-    sincos_test();
+    // sincos_test();
+    sinpi_test();
+    cospi_test();
     atan2_test();
 }
 

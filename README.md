@@ -4,7 +4,7 @@ The header-only library is in [fixpt.h](src/fixpt.h).
 The Arduboy test/benchmark app is in [main.cpp](src/main.cpp).
 
 It implements these fixed-point functions:  
-MULHI, UMULHI, norm, recip, udivhi, rsqrt, log2, exp2, sincos, atan2
+MULHI, UMULHI, norm, recip, udivhi, rsqrt, log2, exp2, sincos, sinpi, cospi, atan2
 
 All math functions have been exhaustively tested over their argument domains.
 
